@@ -11,7 +11,8 @@ class SprocketMatchDashboard extends StatefulWidget {
   const SprocketMatchDashboard({super.key});
 
   @override
-  State<SprocketMatchDashboard> createState() => _SprocketMatchDashboardState();
+  State<SprocketMatchDashboard> createState() =>
+      _SprocketMatchDashboardState();
 }
 
 class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
@@ -23,20 +24,33 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
   ];
   final List<String> roadConditions = ['Uphill', 'Downhill', 'Straight'];
 
-  int? selectedDriverWeight = 65;
-  int? selectedBackrideWeight = 50;
-  String? selectedFrontTire = '80/90-17';
-  String? selectedRearTire = '90/80-17';
-  String? selectedRoadCondition = 'Straight';
+  int? selectedDriverWeight;
+  int? selectedBackrideWeight;
+  String? selectedFrontTire;
+  String? selectedRearTire;
+  String? selectedRoadCondition;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF4FF),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF4B4DED),
-        title: const Text('Sprocket Match Dashboard'),
+        backgroundColor: Colors.brown,
         centerTitle: true,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/images/mylogo.jpg',
+              height: 30,
+            ),
+            const SizedBox(width: 10),
+            const Text(
+              'Sprocket Match',
+              style: TextStyle(fontSize: 20),
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -46,6 +60,7 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
           mainAxisSpacing: 12,
           children: [
             _buildDropdownCard<int>(
+              icon: Icons.person,
               title: 'Weight of Driver',
               value: selectedDriverWeight,
               items: weightOptions,
@@ -53,6 +68,7 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
               onChanged: (val) => setState(() => selectedDriverWeight = val),
             ),
             _buildDropdownCard<int>(
+              icon: Icons.person_add,
               title: 'Weight of BackRide',
               value: selectedBackrideWeight,
               items: weightOptions,
@@ -60,18 +76,21 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
               onChanged: (val) => setState(() => selectedBackrideWeight = val),
             ),
             _buildDropdownCard<String>(
+              icon: Icons.sync_alt,
               title: 'Tire Size (Front)',
               value: selectedFrontTire,
               items: tireSizes,
               onChanged: (val) => setState(() => selectedFrontTire = val),
             ),
             _buildDropdownCard<String>(
+              icon: Icons.sync,
               title: 'Tire Size (Rear)',
               value: selectedRearTire,
               items: tireSizes,
               onChanged: (val) => setState(() => selectedRearTire = val),
             ),
             _buildDropdownCard<String>(
+              icon: Icons.terrain,
               title: 'Road Condition',
               value: selectedRoadCondition,
               items: roadConditions,
@@ -84,6 +103,7 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
   }
 
   Widget _buildDropdownCard<T>({
+    required IconData icon,
     required String title,
     required T? value,
     required List<T> items,
@@ -92,19 +112,33 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
   }) {
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.brown,
-                    fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(icon, color: Colors.brown),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.brown,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
             DropdownButton<T>(
+              hint: const Text("Select"),
               value: value,
               isExpanded: true,
               underline: Container(height: 1, color: Colors.grey.shade300),
@@ -125,5 +159,8 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
     );
   }
 }
+
+
+
 
 
