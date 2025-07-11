@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:ui';
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -23,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const SprocketMatchDashboard()),
+        MaterialPageRoute(builder: (_) => const DashboardWelcomeScreen()),
       );
     });
   }
@@ -39,6 +40,72 @@ class _SplashScreenState extends State<SplashScreen> {
           width: double.infinity,
         ),
       ),
+    );
+  }
+}
+
+// Welcome Screen after splash
+class DashboardWelcomeScreen extends StatelessWidget {
+  const DashboardWelcomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Image.asset(
+          'assets/images/frontbg.jpg',
+          fit: BoxFit.cover,
+          height: double.infinity,
+          width: double.infinity,
+        ),
+        BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+          child: Container(
+            color: Colors.black.withOpacity(0.3),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Spacer(),
+                Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: const Text(
+                    'Welcome To Sprocket Match!',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SprocketMatchDashboard(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'Start',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -149,7 +216,6 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 onPressed: () {
-                  // You can use all values here
                   String driverWeight = driverWeightCtrl.text;
                   String backrideWeight = backrideWeightCtrl.text;
                   String frontTire = frontTireCtrl.text;
@@ -157,7 +223,6 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
                   String engineCc = engineCcCtrl.text;
                   String? road = selectedRoadCondition;
 
-                  // For now, just show a dialog
                   showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
@@ -295,6 +360,9 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
     );
   }
 }
+
+
+
 
 
 
