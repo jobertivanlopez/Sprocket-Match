@@ -190,8 +190,7 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
                     title: 'Road Condition',
                     value: selectedRoadCondition,
                     items: roadConditions,
-                    onChanged: (val) =>
-                        setState(() => selectedRoadCondition = val),
+                    onChanged: (val) => setState(() => selectedRoadCondition = val),
                   ),
                   _buildInputCard(
                     icon: Icons.speed,
@@ -212,42 +211,44 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 onPressed: () {
-                  String driverWeight = driverWeightCtrl.text;
-                  String backrideWeight = backrideWeightCtrl.text;
-                  String frontTire = frontTireCtrl.text;
-                  String rearTire = rearTireCtrl.text;
-                  String engineCc = engineCcCtrl.text;
-                  String? road = selectedRoadCondition;
+                  if (_validateInputs()) {
+                    String driverWeight = driverWeightCtrl.text;
+                    String backrideWeight = backrideWeightCtrl.text;
+                    String frontTire = frontTireCtrl.text;
+                    String rearTire = rearTireCtrl.text;
+                    String engineCc = engineCcCtrl.text;
+                    String? road = selectedRoadCondition;
 
-                  // Get recommendation
-                  String sprocketSize = getRecommendedSprocket(
-                    driverWeight: int.tryParse(driverWeight) ?? 0,
-                    backrideWeight: int.tryParse(backrideWeight) ?? 0,
-                    engineCc: int.tryParse(engineCc) ?? 0,
-                    roadCondition: road ?? "",
-                  );
+                    // Get recommendation
+                    String sprocketSize = getRecommendedSprocket(
+                      driverWeight: int.tryParse(driverWeight) ?? 0,
+                      backrideWeight: int.tryParse(backrideWeight) ?? 0,
+                      engineCc: int.tryParse(engineCc) ?? 0,
+                      roadCondition: road ?? "",
+                    );
 
-                  showDialog(
-                    context: context,
-                    builder: (_) => AlertDialog(
-                      title: const Text('Recommended Sprocket'),
-                      content: Text(
-                        'Driver: $driverWeight kg\n'
-                            'BackRide: $backrideWeight kg\n'
-                            'Front Tire: $frontTire\n'
-                            'Rear Tire: $rearTire\n'
-                            'Engine: $engineCc cc\n'
-                            'Road: ${road ?? "None"}\n\n'
-                            'Recommended Sprocket Size: $sprocketSize',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('OK'),
+                    showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: const Text('Recommended Sprocket'),
+                        content: Text(
+                          'Driver: $driverWeight kg\n'
+                              'BackRide: $backrideWeight kg\n'
+                              'Front Tire: $frontTire\n'
+                              'Rear Tire: $rearTire\n'
+                              'Engine: $engineCc cc\n'
+                              'Road: ${road ?? "None"}\n\n'
+                              'Recommended Sprocket Size: $sprocketSize',
                         ),
-                      ],
-                    ),
-                  );
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 },
                 child: const Text(
                   'Sprocket Set',
@@ -261,6 +262,37 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
     );
   }
 
+  // Validate inputs
+  bool _validateInputs() {
+    if (driverWeightCtrl.text.isEmpty ||
+        backrideWeightCtrl.text.isEmpty ||
+        frontTireCtrl.text.isEmpty ||
+        rearTireCtrl.text.isEmpty ||
+        engineCcCtrl.text.isEmpty ||
+        selectedRoadCondition == null) {
+      _showErrorDialog("Please fill in all fields.");
+      return false;
+    }
+    return true;
+  }
+
+  // Show an error dialog
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   String getRecommendedSprocket({
     required int driverWeight,
     required int backrideWeight,
@@ -270,17 +302,22 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
     int totalWeight = driverWeight + backrideWeight;
 
     if (engineCc >= 150) {
-      if (roadCondition == 'Uphill') return '14T front / 42T rear';
-      if (roadCondition == 'Downhill') return '15T front / 38T rear';
-      return '15T front / 40T rear'; // Straight
+      if (roadCondition == 'Uphill') {
+        return '14T front / 42T rear';  // For Uphill terrain, use lower gearing
+      } else if (roadCondition == 'Downhill') {
+        return '15T front / 38T rear';  // For Downhill, use slightly higher gearing
+      } else {  // For straight roads
+        return '15T front / 40T rear';  // For straight, optimal gearing for speed and balance
+      }
     } else if (engineCc >= 110) {
       if (totalWeight > 140) {
-        return '13T front / 45T rear';
+        return '13T front / 45T rear';  // For heavier load, use lower gearing
       } else {
-        return '14T front / 42T rear';
+        return '14T front / 42T rear';  // Balanced gearing for average weight
       }
     } else {
-      return '13T front / 48T rear'; // for low CC bikes or heavy loads
+      // For low CC bikes or heavy loads
+      return '13T front / 48T rear';  // For lower displacement, more torque is needed
     }
   }
 
@@ -388,6 +425,13 @@ class _SprocketMatchDashboardState extends State<SprocketMatchDashboard> {
     );
   }
 }
+
+
+
+
+
+
+
 
 
 
